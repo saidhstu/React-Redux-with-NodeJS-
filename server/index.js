@@ -1,19 +1,25 @@
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
-
+const route = require('express').Router();
 import webpack from 'webpack';
 import webpackMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import webpackConfig from '../webpack.config.dev';
-import users from './routes/users';
+//import users from './routes/users';
 
 let app = express();
 
 
 app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
-app.use('/api/users',users);
+
+app.use('/api', require('./routes/api').route);
+
+app.use('/api/auth', require('./routes/auth').route);
+//app.use('/api/users',users);
 
 const compiler = webpack(webpackConfig);
 

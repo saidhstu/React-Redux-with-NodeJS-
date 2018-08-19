@@ -23,8 +23,8 @@ export default function validateInput(data) {
   if (!validator.equals(data.password, data.passwordConfirmation)) {
     errors.passwordConfirmation = 'Passwords must match';
   }
-  if (validator.isNull(data.timezone)) {
-    errors.timezone = 'This field is required';
+  if (validator.isNull(data.country)) {
+    errors.country = 'This field is required';
   }
 
   return {

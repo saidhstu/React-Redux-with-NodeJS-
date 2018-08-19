@@ -17,12 +17,15 @@ class  SignupForm extends React.Component{
       email:'',
       password:'',
       passwordConfirmation:'',
-      timezone:'',
+      country:'',
       errors: {},
-      isLoading:false
+      isLoading:false,
+      invalid: false
+     
   }
    this.onChange=this.onChange.bind(this);
    this.onSubmit=this.onSubmit.bind(this);
+    this.checkUserExists=this.checkUserExists.bind(this);
   }
   onChange(e){
     this.setState({[e.target.name]:e.target.value});
@@ -34,6 +37,30 @@ isValid(){
   }
   return isValid;
 }
+
+   checkUserExists(e) {
+    const field = e.target.name;
+    const val = e.target.value;
+    if (val !== '') {
+      this.props.isUserExists(val).then(res => {
+        let errors = this.state.errors;
+        let invalid;
+        if (res.data.user) {
+          errors[field] = 'There is user with such ' + field;
+          invalid = true;
+          this.setState({ errors, invalid });
+        } 
+
+        else {
+          errors[field] = '';
+          invalid = false;
+          this.setState({ errors, invalid });
+        }
+       
+      });
+    }
+  }
+
   onSubmit(e){
     e.preventDefault();
 
@@ -68,16 +95,16 @@ isValid(){
               error={errors.username}
               label="Username"
               onChange={this.onChange}
+              checkUserExists={this.checkUserExists}
               value={this.state.username}
               field="username"
             />
-
-        
-                 
+         
             <TextFieldGroup
               error={errors.email}
               label="Email"
               onChange={this.onChange}
+              checkUserExists={this.checkUserExists}
               value={this.state.email}
               field="email"
             />
@@ -90,8 +117,8 @@ isValid(){
               onChange={this.onChange}
               value={this.state.password}
               field="password"
+             
             />
-
       
             <TextFieldGroup
               error={errors.passwordConfirmation}
@@ -101,26 +128,26 @@ isValid(){
               field="passwordConfirmation"
             />
 
-            <div className={classnames("form-group",{'has-error':errors.timezone})}>
-              <label className="control-label">Timezone</label>
+            <div className={classnames("form-group",{'has-error':errors.country})}>
+              <label className="control-label">Country</label>
               <select 
                    
-                   value={this.state.timezone}
+                   value={this.state.country}
                    onChange={this.onChange}
                    className="form-control" 
-                   name="timezone" 
+                   name="country" 
                    
                    >
-                   <option value="" disabled>Choose Your Timezone</option>
+                   <option value="" disabled>Choose Your Country</option>
                    {options}
                </select>
-               {errors.timezone && <span className="help-block">{errors.timezone}</span>}
+               {errors.country && <span className="help-block">{errors.country}</span>}
 
             </div>
        
 
              <div className="form-group">
-               <button disabled={this.state.isLoading} className="btn btn-success">Sign Up</button>
+               <button disabled={this.state.isLoading || this.state.invalid} className="btn btn-success">Sign Up</button>
              </div>
 
       </form>
@@ -132,7 +159,8 @@ isValid(){
 
 SignupForm.PropTypes={
 userSignupRequest:PropTypes.func.isRequired ,
-addFlashMessage:PropTypes.func.isRequired
+addFlashMessage:PropTypes.func.isRequired,
+isUserExists:PropTypes.func.isRequired
 }
 
 SignupForm.contextTypes={

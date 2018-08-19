@@ -18,7 +18,6 @@ class FlashMessagesList extends React.Component{
             </div>
         );
     }
-
 }
 
 FlashMessagesList.PropTypes={
